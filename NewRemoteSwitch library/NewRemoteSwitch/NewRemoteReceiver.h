@@ -1,33 +1,42 @@
 /*
- * RemoteSwitch library v2.3.0 (20121229) made by Randy Simons http://randysimons.nl/
+ * NewRemoteSwitch library v1.0.0 (20121229) made by Randy Simons http://randysimons.nl/
  *
  * License: GPLv3. See license.txt
  */
 
-#ifndef RemoteReceiver_h
-#define RemoteReceiver_h
+#ifndef NewRemoteReceiver_h
+#define NewRemoteReceiver_h
 
 #include <Arduino.h>
 
-typedef void (*RemoteReceiverCallBack)(unsigned long, unsigned int);
+struct NewRemoteCode {
+	unsigned int period;		// Detected duration in microseconds of 1T in the received signal
+	unsigned long address;		// Address of received code. [0..2^26-1]
+	boolean groupBit;			// Group bit set or not
+	unsigned short switchType;	// 0: swich off; 1: switch on; 2: set dim level
+	unsigned short unit;		// Unit code of received code [0..15]
+	unsigned short dimLevel;	// Dim level [0..15] iff switchType == 2
+};
+
+typedef void (*NewRemoteReceiverCallBack)(NewRemoteCode);
 
 /**
 * See RemoteSwitch for introduction.
 *
-* RemoteReceiver decodes the signal received from a 433MHz-receiver, like the "KlikAanKlikUit"-system
+* NewRemoteReceiver decodes the signal received from a 433MHz-receiver, like the "KlikAanKlikUit"-system
 * as well as the signal sent by the RemoteSwtich class. When a correct signal is received,
 * a user-defined callback function is called.
 *
 * Note that in the callback function, the interrupts are still disabled. You can enabled them, if needed.
-* A call to the callback must b finished before RemoteReceiver will call the callback function again, thus
+* A call to the callback must be finished before NewRemoteReceiver will call the callback function again, thus
 * there is no re-entrant problem.
 *
-* When sending your own code using RemoteSwich, disable() the receiver first.
+* When sending your own code using NewRemoteSwich, disable() the receiver first.
 *
 * This is a pure static class, for simplicity and to limit memory-use.
 */
 
-class RemoteReceiver {
+class NewRemoteReceiver {
 	public:
 		/**
 		* Initializes the decoder.
@@ -39,9 +48,9 @@ class RemoteReceiver {
 		* @param interrupt 	The interrupt as is used by Arduino's attachInterrupt function. See attachInterrupt for details.
 							If < 0, you must call interruptHandler() yourself.
 		* @param minRepeats The number of times the same code must be received in a row before the callback is calles
-		* @param callback Pointer to a callback function, with signature void (*func)(unsigned long, unsigned int). First parameter is the decoded data, the second the period of the timing.
+		* @param callback Pointer to a callback function, with signature void (*func)(NewRemoteCode)
 		*/
-		static void init(short interrupt, unsigned short minRepeats, RemoteReceiverCallBack callback);
+		static void init(short interrupt, unsigned short minRepeats, NewRemoteReceiverCallBack callback);
 
 		/**
 		* Enable decoding. No need to call enable() after init().
@@ -72,6 +81,9 @@ class RemoteReceiver {
 		*/
 		static boolean isReceiving(int waitMillis = 150);
 
+		/**
+		 * Called every time the signal level changes (high to low or vice versa). Usually called by interrupt.
+		 */
 		static void interruptHandler();
 
 	private:
@@ -79,7 +91,7 @@ class RemoteReceiver {
 		static unsigned short _interrupt;			// Radio input interrupt
 		volatile static unsigned short _state;		// State of decoding process. There are 49 states, 1 for "waiting for signal" and 48 for decoding the 48 edges in a valid code.
 		static unsigned short _minRepeats;
-		static RemoteReceiverCallBack _callback;
+		static NewRemoteReceiverCallBack _callback;
 		static boolean _inCallback;					// When true, the callback function is being executed; prevents re-entrance.
 		static boolean _enabled;					// If true, monitoring and decoding is enabled. If false, interruptHandler will return immediately.
 

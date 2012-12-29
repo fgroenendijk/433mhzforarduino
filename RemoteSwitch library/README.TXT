@@ -1,8 +1,14 @@
-RemoteSwitch library v2.2.0 (20120213) for Arduino 0022/1.0
+RemoteSwitch library v2.3.0 (20121229) for Arduino 1.0
 Made by Randy Simons http://randysimons.nl/
 
 This library provides an easy class for Arduino, to send and receive signals
-used by some common 433MHz remote control switches
+used by some common "old style" 433MHz remote control switches.
+
+There are two styles of remote:
+ - "old style", which uses switches or a dial to set the house code. Use this
+   library.
+ - "new style", which use a button on the receivers to "learn" a signal. Use
+   the NewRemoteSwitch library instead.
 
 See RemoteTransmitter.h and RemoteReceiver.h for details!
 
@@ -17,7 +23,8 @@ Installation of library:
    <arduinodir>/libraries/)
  
 Default installation sender & demo:
- - Connect tha data-in-pin of a 433MHz transmitter to digital pin 11. See photo.
+ - Connect tha data-in-pin of a 433MHz transmitter to digital pin 11. See 
+   docs/hardware setup.jpg.
    (Note: your hardware may have a different pin configuration!)
  - Start Arduino, and open the example: File -> Examples -> RemoteSwitch ->
    LightShow
@@ -27,9 +34,9 @@ Default installation sender & demo:
 
 Default installation receiver & demo:
  - Connect the data-out-pin of a 433MHz receiver to digital pin 2. See photo.
-  (Note: your hardware may have a different pin configuration!)
+   (Note: your hardware may have a different pin configuration!)
  - Start Arduino, and open the example: File -> Examples -> RemoteSwitch ->
-   ShowReceivedCode
+   ShowReceivedCode or ShowReceivedCodeNewKaku, depending on your remote.
  - Compile, upload and run
  - Open serial monitor in Arduino (115200 baud)
  - Press buttons on a 433MHz-remote, and watch the serial monitor
@@ -41,6 +48,11 @@ Notes:
 
 
 Changelog:
+RemoteSwitch library v2.3.0 (20121229) for Arduino 1.0
+ - Improved reception quality by filtering too short pulses.
+ - Dropped pre-v1.0 Arduino support.
+ - Added RemoteReceiver::deinit()
+
 RemoteSwitch library v2.2.1 (20120314) for Arduino 0022/1.0
  - Fixed Elro code, it caused memory corruption.
  - Renamed old-style .pde files to new-style .ino
